@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.0;netstandard1.3;netstandard2.0;netstandard2.1;net461</TargetFrameworks>
+    <PackageId>Snowflake.CSharp</PackageId>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>HueiFeng</Authors>
+    <Product>Snowflake</Product>
+    <Description>Twitter的雪花算法SnowFlake，使用csharp语言实现。</Description>
+    <PackageProjectUrl>https://github.com/hueifeng/snowflake-csharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hueifeng/snowflake-csharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+</Project>
