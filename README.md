@@ -27,7 +27,7 @@ Twitter's SnowFlake algorithm is implemented using C# language.
 ## Installation
 
 ```
-PM> Install-Package Snowflake.Data -Version 1.1.2
+PM> Install-Package Snowflake.CSharp
 ```
 
 ## Useage
