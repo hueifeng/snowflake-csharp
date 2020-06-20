@@ -8,7 +8,7 @@ namespace Snowflake.Sample
     {
         static void Main(string[] args)
         {
-            SnowFlake snowFlake=new SnowFlake(1,1);
+            SnowFlake snowFlake=new SnowFlake(datacenterId:1,machineId:1);
             List<long> list=new List<long>();
             for (int i = 1000 - 1; i >= 0; i--)
             {
