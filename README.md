@@ -9,13 +9,17 @@
 <a href="https://www.nuget.org/packages/Snowflake.CSharp">
       <image src="https://img.shields.io/nuget/v/Snowflake.CSharp.svg?style=flat-square" alt="nuget">
 </a>
-
+    
+<a href="https://github.com/hueifeng/snowflake-csharp/workflows/.NET%20Core/badge.svg">
+      <image src="https://github.com/hueifeng/snowflake-csharp/workflows/.NET%20Core/badge.svg" alt="NETCore">
+</a>
+    
 <a href="https://www.nuget.org/stats/packages/Snowflake.CSharp?groupby=Version">
       <image src="https://img.shields.io/nuget/dt/Snowflake.CSharp.svg?style=flat-square" alt="stats">
 </a>
     
 <a href="https://raw.githubusercontent.com/hueifeng/snowflake-csharp/master/LICENSE">
-    <image src="https://img.shields.io/badge/license-Apache%202-blue.svg" alt="stats">
+    <image src="https://img.shields.io/badge/license-Apache%202-blue.svg" alt="LICENSE">
 </a>
 </p>
 
