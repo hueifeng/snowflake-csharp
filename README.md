@@ -14,7 +14,7 @@
       <image src="https://img.shields.io/nuget/dt/Snowflake.CSharp.svg?style=flat-square" alt="stats">
 </a>
     
-<a href="https://raw.githubusercontent.com/hueifeng/Snowflake.CSharp/master/LICENSE">
+<a href="https://raw.githubusercontent.com/hueifeng/snowflake-csharp/master/LICENSE">
     <image src="https://img.shields.io/badge/license-Apache%202-blue.svg" alt="stats">
 </a>
 </p>
