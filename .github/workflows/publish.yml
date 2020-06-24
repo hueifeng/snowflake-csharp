@@ -11,9 +11,9 @@ jobs:
          - uses: actions/checkout@v2
           # Publish
          - name: publish on version change
-            id: publish_nuget
-            uses: rohith/publish-nuget@v2
-            with:
+           id: publish_nuget
+           uses: rohith/publish-nuget@v2
+           with:
               # Filepath of the project to be packaged, relative to root of repository
               PROJECT_FILE_PATH: Snowflake.csproj
               NUGET_KEY: ${{secrets.NUGET_API_KEY}}
