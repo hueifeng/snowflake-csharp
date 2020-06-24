@@ -10,7 +10,7 @@ jobs:
        steps:
          - uses: actions/checkout@v2
           # Publish
-          - name: publish on version change
+         - name: publish on version change
             id: publish_nuget
             uses: rohith/publish-nuget@v2
             with:
