@@ -5,7 +5,7 @@ on:
             - master # Default release branch
 jobs:
    publish:
-       name: build, pack & publish
+       name: list on nuget
        runs-on: ubuntu-latest 
        steps:
          - uses: actions/checkout@v2
