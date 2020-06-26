@@ -11,6 +11,7 @@
     <RepositoryUrl>https://github.com/hueifeng/snowflake-csharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Version>1.1.0</Version>
+    <PackageIconUrl>https://raw.githubusercontent.com/hueifeng/snowflake-csharp/master/snowflake.png</PackageIconUrl>
   </PropertyGroup>
 
 </Project>
