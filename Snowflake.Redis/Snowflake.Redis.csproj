@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Snowflake.Redis.CSharp</PackageId>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>HueiFeng</Authors>
+    <Product>Snowflake</Product>
+    <Description>Twitter的雪花算法SnowFlake，使用csharp语言实现。</Description>
+    <PackageProjectUrl>https://github.com/hueifeng/snowflake-csharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hueifeng/snowflake-csharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Version>1.0.0</Version>
+    <PackageIconUrl>https://raw.githubusercontent.com/hueifeng/snowflake-csharp/master/snowflake.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
