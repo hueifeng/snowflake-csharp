@@ -34,7 +34,7 @@ namespace Snowflake
         private const int TimestmpLeft = DatacenterLeft + DatacenterBit;
 
         private readonly long _datacenterId;  //数据中心
-        private readonly long _machineId;     //机器标识
+        private static long _machineId;     //机器标识
         private int _sequence = 0; //序列号
         private long _lastStmp = -1L;//上一次时间戳
         public SnowFlake(long datacenterId, long machineId)
@@ -47,9 +47,10 @@ namespace Snowflake
             {
                 throw new ArgumentException("machineId can't be greater than MAX_MACHINE_NUM or less than 0");
             }
-            this._datacenterId = datacenterId;
-            this._machineId = machineId;
+            _datacenterId = datacenterId;
+            _machineId = machineId;
         }
+
         readonly object _lock = new object();
 
         /// <summary>
@@ -101,6 +102,11 @@ namespace Snowflake
                 mill = GetNewStmp();
             }
             return mill;
+        }
+
+        public static void SetMachineId(long machineId)
+        {
+            _machineId = machineId;
         }
 
         private long GetNewStmp()

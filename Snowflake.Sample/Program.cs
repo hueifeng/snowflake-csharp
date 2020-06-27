@@ -8,8 +8,8 @@ namespace Snowflake.Sample
     {
         static void Main(string[] args)
         {
-            SnowFlake snowFlake=new SnowFlake(datacenterId:1,machineId:1);
-            List<long> list=new List<long>();
+            SnowFlake snowFlake = new SnowFlake(datacenterId: 1, machineId: 1);
+            List<long> list = new List<long>();
             for (int i = 1000 - 1; i >= 0; i--)
             {
                 list.Add(snowFlake.NextId());
@@ -19,7 +19,7 @@ namespace Snowflake.Sample
             for (int i = 1000 - 1; i >= 0; i--)
             {
                 list.Add(snowFlake1.NextId());
-              
+
             }
 
             SnowFlake snowFlake2 = new SnowFlake(1, 3);
@@ -33,7 +33,6 @@ namespace Snowflake.Sample
             Console.WriteLine("Hello World!");
         }
 
-  
 
     }
 
@@ -51,5 +50,8 @@ namespace Snowflake.Sample
             }
         }
     }
+
+
+
 
 }
