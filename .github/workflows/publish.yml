@@ -18,3 +18,10 @@ jobs:
               PROJECT_FILE_PATH: Snowflake/Snowflake.csproj
               NUGET_KEY: ${{secrets.NUGET_API_KEY}}
               PACKAGE_NAME: Snowflake.CSharp
+         - name: publish on version change
+           uses: rohith/publish-nuget@v2
+           with:
+              # Filepath of the project to be packaged, relative to root of repository
+              PROJECT_FILE_PATH: Snowflake.Redis/Snowflake.Redis.csproj
+              NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+              PACKAGE_NAME: Snowflake.Redis.CSharp  
