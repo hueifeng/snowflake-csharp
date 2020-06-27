@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snowflake.Redis", "Snowflake.Redis\Snowflake.Redis.csproj", "{7EF8A47E-6289-4450-9882-84225F5728ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snowflake.Redis.Sample", "WebApplication1\Snowflake.Redis.Sample.csproj", "{41CA6A81-3E75-4312-A703-3C762674F476}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snowflake.Redis.Sample", "Snowflake.Redis.Sample\Snowflake.Redis.Sample.csproj", "{83A27762-D585-43C2-8C06-AC263FEE27FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +38,10 @@ Global
 		{7EF8A47E-6289-4450-9882-84225F5728ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EF8A47E-6289-4450-9882-84225F5728ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EF8A47E-6289-4450-9882-84225F5728ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{41CA6A81-3E75-4312-A703-3C762674F476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{41CA6A81-3E75-4312-A703-3C762674F476}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{41CA6A81-3E75-4312-A703-3C762674F476}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{41CA6A81-3E75-4312-A703-3C762674F476}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83A27762-D585-43C2-8C06-AC263FEE27FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83A27762-D585-43C2-8C06-AC263FEE27FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83A27762-D585-43C2-8C06-AC263FEE27FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83A27762-D585-43C2-8C06-AC263FEE27FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,7 +50,7 @@ Global
 		{5EE984E3-1276-477C-AFDC-0C87286A30DE} = {255E2905-F1BB-4E99-80F9-8C8B1A74DA1F}
 		{6C2D6F4C-5020-42AC-B535-FA17C307C538} = {255E2905-F1BB-4E99-80F9-8C8B1A74DA1F}
 		{7EF8A47E-6289-4450-9882-84225F5728ED} = {255E2905-F1BB-4E99-80F9-8C8B1A74DA1F}
-		{41CA6A81-3E75-4312-A703-3C762674F476} = {255E2905-F1BB-4E99-80F9-8C8B1A74DA1F}
+		{83A27762-D585-43C2-8C06-AC263FEE27FE} = {255E2905-F1BB-4E99-80F9-8C8B1A74DA1F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5009E660-AE7E-4597-9D3F-F1BF84A327D8}

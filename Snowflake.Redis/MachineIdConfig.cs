@@ -11,11 +11,11 @@ namespace Snowflake.Redis
     {
         private readonly ICacheAsync _cacheAsync;
 
-        public MachineIdConfig(ICacheAsync cacheAsync, IOptions<SnowflakeOptions> options)
+        public MachineIdConfig(ICacheAsync cacheAsync,SnowflakeOptions options)
         {
             this._cacheAsync = cacheAsync;
-            Name = options.Value.Name;
-            _datacenterId = options.Value.DataCenterId;
+            Name = options.Name;
+            _datacenterId = options.DataCenterId;
         }
 
         /// <summary>
@@ -31,12 +31,12 @@ namespace Snowflake.Redis
         /// <summary>
         ///     业务类型名称
         /// </summary>
-        public string Name { get; set; }
+        private string Name { get; set; }
 
         /// <summary>
         ///     本地IP地址
         /// </summary>
-        public static string LocalIp { get; set; }
+        private static string LocalIp { get; set; }
 
         /// <summary>
         ///     获取IP地址
@@ -71,7 +71,7 @@ namespace Snowflake.Redis
         /// 使用 业务名 + 组名 + IP 作为 Redis 的 key，机器IP作为 value，存储到Redis中
         /// </summary>
         /// <returns></returns>
-        public async Task<long> CreateMachineId()
+        private async Task<long> CreateMachineId()
         {
             try
             {
