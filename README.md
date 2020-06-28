@@ -43,13 +43,43 @@ PM> Install-Package Snowflake.CSharp
 1. Specify the data center ID and machine ID.
 
 ```csharp
-SnowFlake snowFlake=new SnowFlake(datacenterId:1,machineId:1);
+SnowFlake snowFlake = new SnowFlake(datacenterId:1,machineId:1);
 ```
 
 2. Generate Id.
 
 ```csharp
-var id=snowFlake.NextId();
+var id = snowFlake.NextId();
+```
+
+## Advanced
+
+1. Used in distributed
+
+```
+PM> Install-Package Snowflake.Redis.CSharp
+```
+
+2. Add the following code at ConfigureServices() method
+
+```csharp
+
+public void ConfigureServices(IServiceCollection services)
+{
+  services.AddSnowflakeRedisService(connectionString:"127.0.0.1:6379,allowAdmin=true", 
+      option 
+            =>Configuration.GetSection("snowFlake").Bind(option)
+     );
+}
+```
+
+Distributed snowflake ID automated configuration of different machine ids
+
+```
+"snowFlake": {
+  "dataCenterId": 1,
+  "Name": "test"
+} 
 ```
 
 ## License
