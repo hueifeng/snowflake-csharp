@@ -17,40 +17,40 @@
 
 </div>
 
-## ËµÃ÷
+## è¯´æ˜
 
-TwitterµÄÑ©»¨Ëã·¨SnowFlake£¬Ê¹ÓÃcsharpÓïÑÔÊµÏÖ¡£
+Twitterçš„é›ªèŠ±ç®—æ³•SnowFlakeï¼Œä½¿ç”¨csharpè¯­è¨€å®ç°ã€‚
 
 
-## °²×°
+## å®‰è£…
 
 ```
 PM> Install-Package Snowflake.Data -Version 1.1.2
 ```
 
-## Ê¹ÓÃ
+## ä½¿ç”¨
 
-1. Ö¸¶¨Êı¾İÖĞĞÄID¼°»úÆ÷ID.
-
-```csharp
-SnowFlake snowFlake=new SnowFlake(datacenterId:1,machineId:1);
-```
-
-2. Éú³ÉID
+1. æŒ‡å®šæ•°æ®ä¸­å¿ƒIDåŠæœºå™¨ID.
 
 ```csharp
-var id=snowFlake.NextId();
+SnowFlake snowFlake = new SnowFlake(datacenterId:1,machineId:1);
 ```
 
-## ¸ß¼¶
+2. ç”ŸæˆID
 
-1. ÓÃÓÚ·Ö²¼Ê½
+```csharp
+var id = snowFlake.NextId();
+```
+
+## é«˜çº§
+
+1. ç”¨äºåˆ†å¸ƒå¼
 
 ```
 PM> Install-Package Snowflake.Redis.CSharp
 ```
 
-2. ÔÚ ConfigureServices() ·½·¨ÖĞÌí¼ÓÈçÏÂ´úÂë
+2. åœ¨ ConfigureServices() æ–¹æ³•ä¸­æ·»åŠ å¦‚ä¸‹ä»£ç 
 
 ```csharp
 
@@ -63,7 +63,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-·Ö²¼Ê½Ñ©»¨ID²»Í¬»úÆ÷ID×Ô¶¯»¯ÅäÖÃ
+åˆ†å¸ƒå¼é›ªèŠ±IDä¸åŒæœºå™¨IDè‡ªåŠ¨åŒ–é…ç½®
 
 ```
 "snowFlake": {
