@@ -79,7 +79,6 @@ namespace Snowflake.Redis
                 var flag = await RegisterMachine(_machineId, LocalIp);
                 if (flag)
                 {
-                    //TODO 更新超时时间
                     UpdateExpTimeThread();
                     //返回机器ID
                     return _machineId;
