@@ -1,9 +1,7 @@
-﻿using System;
-using CSRedis;
+﻿using CSRedis;
 using Microsoft.Extensions.DependencyInjection;
 using Snowflake.Redis.Cache;
-using System.Linq;
-using Microsoft.Extensions.Options;
+using System;
 
 namespace Snowflake.Redis.DependencyInjection
 {
