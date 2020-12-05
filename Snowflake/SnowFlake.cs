@@ -62,9 +62,12 @@ namespace Snowflake
             lock (_lock)
             {
                 long currStamp = GetNewStamp();
+
                 if (currStamp < _lastStamp)
                 {
-                    throw new Exception("Clock moved backwards.  Refusing to generate id");
+                    //时钟回拨，更新为上一次生成id的时间戳
+                    currStamp = _lastStamp;
+                    //throw new Exception("Clock moved backwards.  Refusing to generate id");
                 }
 
                 if (currStamp == _lastStamp)
@@ -85,7 +88,7 @@ namespace Snowflake
 
                 _lastStamp = currStamp;
 
-                var id= ((currStamp - StartStamp) << TimestampLeft) //时间戳部分
+                var id = ((currStamp - StartStamp) << TimestampLeft) //时间戳部分
                        | (_datacenterId << DatacenterLeft) //数据中心部分
                        | (_machineId << MachineLeft) //机器标识部分
                        | _sequence; //序列号部分
