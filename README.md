@@ -84,5 +84,5 @@ Distributed snowflake ID automated configuration of different machine ids
 
 ## License
 
-[Apache](https://github.com/hueifeng/snowflake-csharp/blob/master/LICENSE)
+[Apache](LICENSE)
 
