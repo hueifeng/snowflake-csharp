@@ -97,7 +97,7 @@ namespace Snowflake
             }
         }
 
-        private long GetNextMill()
+        protected virtual long GetNextMill()
         {
             long mill = GetNewStamp();
             while (mill <= _lastStamp)
@@ -112,7 +112,7 @@ namespace Snowflake
             _machineId = machineId;
         }
 
-        private long GetNewStamp()
+        protected virtual long GetNewStamp()
         {
             return System.CurrentTimeMillis();
         }
