@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://github.com/hueifeng/snowflake-csharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hueifeng/snowflake-csharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <PackageIconUrl>https://raw.githubusercontent.com/hueifeng/snowflake-csharp/master/snowflake.png</PackageIconUrl>
   </PropertyGroup>
 
