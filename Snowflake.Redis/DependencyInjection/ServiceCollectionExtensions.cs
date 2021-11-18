@@ -13,6 +13,7 @@ namespace Snowflake.Redis.DependencyInjection
             RedisHelper.Initialization(new CSRedisClient(connectionString));
             SnowflakeOptions snowflakeOptions = new SnowflakeOptions();
             action.Invoke(snowflakeOptions);
+            services.AddSingleton<ICacheAsync>(new RedisCacheAsync());
             var machineIdConfig = new MachineIdConfig(new RedisCacheAsync(), snowflakeOptions);
             services.AddTransient(e => machineIdConfig.InitMachineId().Result);
             services.AddSingleton(e => machineIdConfig);
