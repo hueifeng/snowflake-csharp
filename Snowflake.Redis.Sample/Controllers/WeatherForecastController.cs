@@ -11,6 +11,7 @@ namespace Snowflake.Redis.Sample.Controllers
     public class WeatherForecastController : ControllerBase
     {
         private readonly SnowFlake _snowFlake;
+        private readonly MachineIdConfig _machineIdConfig;
 
         private static readonly string[] Summaries = new[]
         {
@@ -19,16 +20,19 @@ namespace Snowflake.Redis.Sample.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, SnowFlake snowFlake)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, SnowFlake snowFlake,
+            MachineIdConfig machineIdConfig)
         {
             _logger = logger;
             this._snowFlake = snowFlake;
+            this._machineIdConfig = machineIdConfig;
         }
 
         [HttpGet]
         public string Get()
         {
-            return  $"MachineId：{_snowFlake.GetMachineId()}，Id：{_snowFlake.NextId()}";
+            return _machineIdConfig.GetKey();
+            //return  $"MachineId：{_snowFlake.GetMachineId()}，Id：{_snowFlake.NextId()}";
         }
 
         

@@ -10,7 +10,7 @@ namespace Snowflake.Redis
     {
         private readonly ICacheAsync _cacheAsync;
 
-        public MachineIdConfig(ICacheAsync cacheAsync,SnowflakeOptions options)
+        public MachineIdConfig(ICacheAsync cacheAsync, SnowflakeOptions options)
         {
             this._cacheAsync = cacheAsync;
             Name = options.Name;
@@ -37,6 +37,11 @@ namespace Snowflake.Redis
         /// </summary>
         private static string LocalIp { get; set; }
 
+        public string GetKey()
+        {
+            return $"{Name}:{_datacenterId}:{_machineId}";
+        }
+
         /// <summary>
         ///     获取IP地址
         /// </summary>
@@ -51,14 +56,15 @@ namespace Snowflake.Redis
                     return ipAddress.ToString();
                 }
             }
+
             return addressIp;
         }
 
         public async Task<SnowFlake> InitMachineId()
         {
-            LocalIp = GetIpAddress();//192.168.0.200
-            long ip = long.Parse(LocalIp.Replace(".", ""));//1921680200
-            _machineId = ip.GetHashCode() % 32;//0-31
+            LocalIp = GetIpAddress(); //192.168.0.200
+            long ip = long.Parse(LocalIp.Replace(".", "")); //1921680200
+            _machineId = ip.GetHashCode() % 32; //0-31
             //创建一个机器ID
             await CreateMachineId();
 
@@ -95,7 +101,6 @@ namespace Snowflake.Redis
                     // 如果存在剩余的ID
                     await CreateMachineId();
                 }
-
             }
             catch (Exception)
             {
@@ -104,6 +109,7 @@ namespace Snowflake.Redis
                 GetRandomMachineId();
                 return _machineId;
             }
+
             return _machineId;
         }
 
@@ -113,7 +119,7 @@ namespace Snowflake.Redis
         private void GetRandomMachineId()
         {
             Random random = new Random();
-            _machineId = random.Next(32,63);
+            _machineId = random.Next(32, 63);
         }
 
         /// <summary>
@@ -126,7 +132,7 @@ namespace Snowflake.Redis
             bool flag = true;
             for (int i = 0; i < 32; i++)
             {
-                flag = await _cacheAsync.Exists(Name + _datacenterId + i);
+                flag = await _cacheAsync.Exists($"{Name}:{_datacenterId}:{i}");
                 //如果不存在，设置机器ID为这个不存在的数字
                 if (!flag)
                 {
@@ -134,6 +140,7 @@ namespace Snowflake.Redis
                     break;
                 }
             }
+
             return !flag;
         }
 
@@ -149,7 +156,6 @@ namespace Snowflake.Redis
             timer.Start();
 
             timer.Elapsed += Timer_Elapsed;
-
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
@@ -157,7 +163,7 @@ namespace Snowflake.Redis
             bool b = CheckIsLocalIp(_machineId.ToString()).Result;
             if (b)
             {
-                _cacheAsync.Expire(Name + _datacenterId + _machineId, 60 * 60 * 24);
+                _cacheAsync.Expire(GetKey(), 60 * 60 * 24);
             }
             else
             {
@@ -169,7 +175,6 @@ namespace Snowflake.Redis
                 // 更改雪花中的机器ID
                 SnowFlake.SetMachineId(_machineId);
             }
-
         }
 
         /// <summary>
@@ -179,7 +184,7 @@ namespace Snowflake.Redis
         /// <returns></returns>
         private async Task<bool> CheckIsLocalIp(string machineId)
         {
-            string ip = await _cacheAsync.Get(Name + _datacenterId + machineId);
+            string ip = await _cacheAsync.Get(GetKey());
             return LocalIp.Equals(ip);
         }
 
@@ -192,7 +197,7 @@ namespace Snowflake.Redis
         private async Task<bool> RegisterMachine(long machineId, string localIp)
         {
             // key 业务号 + 数据中心ID + 机器ID value 机器IP
-            var key = Name + _datacenterId + machineId;
+            var key = GetKey();
             var result = await _cacheAsync.SetNxAsync(key, localIp);
             if (result)
             {
@@ -209,8 +214,8 @@ namespace Snowflake.Redis
                 await _cacheAsync.Expire(key, 60 * 60 * 24);
                 return true;
             }
+
             return false;
         }
-
     }
 }

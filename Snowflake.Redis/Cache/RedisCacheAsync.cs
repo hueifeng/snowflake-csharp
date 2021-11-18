@@ -45,5 +45,15 @@ namespace Snowflake.Redis.Cache
         {
             return RedisHelper.GetAsync(key);
         }
+
+        /// <summary>
+        ///     删除指定的key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public Task<long> Del(string key)
+        {
+            return RedisHelper.DelAsync(key);
+        }
     }
 }

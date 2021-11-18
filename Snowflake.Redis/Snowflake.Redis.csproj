@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
     <PackageId>Snowflake.Redis.CSharp</PackageId>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>HueiFeng</Authors>
@@ -15,18 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSRedisCore" Version="3.6.5" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.5" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+  
+  <ItemGroup>
     <PackageReference Include="CSRedisCore" Version="3.6.5" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.*" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.*" />
   </ItemGroup>
-
-
+  
   <ItemGroup>
     <ProjectReference Include="..\Snowflake\Snowflake.csproj" />
   </ItemGroup>

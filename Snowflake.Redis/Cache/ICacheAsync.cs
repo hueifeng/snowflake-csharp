@@ -33,5 +33,12 @@ namespace Snowflake.Redis.Cache
         /// <param name="key"></param>
         /// <returns></returns>
         Task<string> Get(string key);
+        
+        /// <summary>
+        /// 删除指定的key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<long> Del(string key);
     }
 }
