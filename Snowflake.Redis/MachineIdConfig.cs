@@ -113,7 +113,7 @@ namespace Snowflake.Redis
         private void GetRandomMachineId()
         {
             Random random = new Random();
-            _machineId = (int)random.NextDouble() * 31 + 31;
+            _machineId = random.Next(32,63);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace Snowflake.Redis
                 // 重新生成机器ID，并且更改雪花中的机器ID
                 GetRandomMachineId();
                 //重新生成并注册机器ID
-                CreateMachineId().Wait();
+                CreateMachineId().ConfigureAwait(false).GetAwaiter().GetResult();
                 // 更改雪花中的机器ID
                 SnowFlake.SetMachineId(_machineId);
             }

@@ -16,8 +16,8 @@ namespace Snowflake
         /// 每一部分占用的位数
         /// </summary>
         private const int SequenceBit = 12; //序列号占用的位数
-        private const int MachineBit = 5;   //机器标识占用的位数
-        private const int DatacenterBit = 5;//数据中心占用的位数
+        private const int MachineBit = 6;   //机器标识占用的位数
+        private const int DatacenterBit = 6;//数据中心占用的位数
 
         /// <summary>
         /// 每一部分的最大值
@@ -110,6 +110,11 @@ namespace Snowflake
         public static void SetMachineId(long machineId)
         {
             _machineId = machineId;
+        }
+
+        protected long GetMachineId()
+        {
+            return _machineId;
         }
 
         protected virtual long GetNewStamp()
