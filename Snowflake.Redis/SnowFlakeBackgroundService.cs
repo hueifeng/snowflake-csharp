@@ -22,12 +22,14 @@ namespace Snowflake.Redis
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            stoppingToken.Register(() =>
-            {
-                _logger.LogDebug("###  SnowFlake background task is stopping.");
-                _cacheAsync.Del(_machineIdConfig.GetKey());
-            });
             return Task.CompletedTask;
+        }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogDebug("###  SnowFlake background task is stopping.");
+            _cacheAsync.Del(_machineIdConfig.GetKey());
+            return base.StopAsync(cancellationToken);
         }
     }
 }
