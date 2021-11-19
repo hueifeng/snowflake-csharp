@@ -30,7 +30,7 @@ namespace Snowflake.Redis
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation($"###  SnowFlake background task is stopping. {_machineIdConfig.GetKey()}");
-            await _cacheAsync.Del($"{_machineIdConfig.GetNameAndDataCenterId()}:{snowFlake.GetMachineId()}");
+            await _cacheAsync.Del(_machineIdConfig.GetKey());
         }
     }
 }
