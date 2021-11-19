@@ -20,5 +20,20 @@ namespace Snowflake.Redis.DependencyInjection
             services.AddHostedService<SnowFlakeBackgroundService>();
             return services;
         }
+
+        public static IServiceCollection AddSnowflakeRedisService(this IServiceCollection services,
+          Action<SnowflakeOptions> action)
+        {
+            SnowflakeOptions snowflakeOptions = new SnowflakeOptions();
+            action.Invoke(snowflakeOptions);
+            services.Configure(action);
+            RedisHelper.Initialization(new CSRedisClient(snowflakeOptions.ConnectionString));
+            services.AddSingleton<ICacheAsync>(new RedisCacheAsync());
+            var machineIdConfig = new MachineIdConfig(new RedisCacheAsync(), snowflakeOptions);
+            services.AddTransient(e => machineIdConfig.InitMachineId().Result);
+            services.AddSingleton(e => machineIdConfig);
+            services.AddHostedService<SnowFlakeBackgroundService>();
+            return services;
+        }
     }
 }
