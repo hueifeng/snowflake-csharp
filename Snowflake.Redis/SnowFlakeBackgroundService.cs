@@ -11,13 +11,15 @@ namespace Snowflake.Redis
         private readonly ILogger<SnowFlakeBackgroundService> _logger;
         private readonly ICacheAsync _cacheAsync;
         private readonly MachineIdConfig _machineIdConfig;
+        private readonly SnowFlake snowFlake;
 
         public SnowFlakeBackgroundService(ILogger<SnowFlakeBackgroundService> logger,
-            ICacheAsync cacheAsync, MachineIdConfig machineIdConfig)
+            ICacheAsync cacheAsync, MachineIdConfig machineIdConfig, SnowFlake snowFlake)
         {
             this._logger = logger;
             this._machineIdConfig = machineIdConfig;
             this._cacheAsync = cacheAsync;
+            this.snowFlake = snowFlake;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -28,7 +30,7 @@ namespace Snowflake.Redis
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation($"###  SnowFlake background task is stopping. {_machineIdConfig.GetKey()}");
-            await _cacheAsync.Del(_machineIdConfig.GetKey());
+            await _cacheAsync.Del($"{_machineIdConfig.GetKey()}:{snowFlake.GetMachineId()}");
         }
     }
 }

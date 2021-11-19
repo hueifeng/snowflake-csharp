@@ -112,7 +112,7 @@ namespace Snowflake
             _machineId = machineId;
         }
 
-        protected long GetMachineId()
+        public long GetMachineId()
         {
             return _machineId;
         }

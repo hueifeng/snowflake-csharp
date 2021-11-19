@@ -39,7 +39,7 @@ namespace Snowflake.Redis
 
         public string GetKey()
         {
-            return $"{Name}:{_datacenterId}:{_machineId}";
+            return $"{Name}:{_datacenterId}";
         }
 
         /// <summary>
