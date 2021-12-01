@@ -31,7 +31,6 @@ Language: English | [中文](README.zh-cn.md)
 
 Twitter's SnowFlake algorithm is implemented using C# language.
 
-
 ## Installation
 
 ```
