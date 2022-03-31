@@ -52,6 +52,8 @@ var id = snowFlake.NextId();
 ```
 
 ## Advanced
+   
+Support Kubernetes HorizontalPodAutoscaler.
 
 1. Used in distributed
 
