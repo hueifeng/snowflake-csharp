@@ -1,29 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
-    <PackageId>Snowflake.Redis.CSharp</PackageId>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Authors>HueiFeng</Authors>
-    <Product>Snowflake</Product>
-    <Description>Twitter的雪花算法SnowFlake，使用csharp语言实现。</Description>
-    <PackageProjectUrl>https://github.com/hueifeng/snowflake-csharp</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/hueifeng/snowflake-csharp</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <Version>1.2.9</Version>
-    <PackageIconUrl>https://raw.githubusercontent.com/hueifeng/snowflake-csharp/master/snowflake.png</PackageIconUrl>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
+		<PackageId>Snowflake.Redis.CSharp</PackageId>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<Authors>HueiFeng</Authors>
+		<Product>Snowflake</Product>
+		<Description>Twitter的雪花算法SnowFlake，使用csharp语言实现。</Description>
+		<PackageProjectUrl>https://github.com/hueifeng/snowflake-csharp</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/hueifeng/snowflake-csharp</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<Version>1.2.9</Version>
+		<PackageIconUrl>https://raw.githubusercontent.com/hueifeng/snowflake-csharp/master/snowflake.png</PackageIconUrl>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="CSRedisCore" Version="3.6.5" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\Snowflake\Snowflake.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CSRedisCore" Version="3.6.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Snowflake\Snowflake.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
 </Project>
