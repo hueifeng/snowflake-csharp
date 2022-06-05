@@ -55,13 +55,13 @@ var id = snowFlake.NextId();
    
 Support Kubernetes HorizontalPodAutoscaler.
 
-1. Used in distributed
+1. Used in distributed.
 
 ```
 PM> Install-Package Snowflake.Redis.CSharp
 ```
 
-2. Add the following code at ConfigureServices() method
+2. Add the following code at ConfigureServices() method.
 
 ```csharp
 
@@ -74,7 +74,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-Distributed snowflake ID automated configuration of different machine ids
+Distributed snowflake ID automated configuration of different machine ids.
 
 ```
 "snowFlake": {
