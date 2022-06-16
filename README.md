@@ -25,7 +25,12 @@
 
 </div>
 
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhueifeng%2Fsnowflake-csharp.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhueifeng%2Fsnowflake-csharp?ref=badge_large)
+
 ## Description
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhueifeng%2Fsnowflake-csharp.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhueifeng%2Fsnowflake-csharp?ref=badge_shield)
+
 
 Language: English | [中文](README.zh-cn.md)
 
@@ -86,4 +91,3 @@ Distributed snowflake ID automated configuration of different machine ids.
 ## License
 
 [Apache](LICENSE)
-
