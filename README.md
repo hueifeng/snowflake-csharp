@@ -21,9 +21,14 @@
 <a href="https://raw.githubusercontent.com/hueifeng/snowflake-csharp/master/LICENSE">
     <image src="https://img.shields.io/badge/license-Apache%202-blue.svg" alt="LICENSE">
 </a>
+    
+<a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fhueifeng%2Fsnowflake-csharp?ref=badge_shield">
+      <image src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhueifeng%2Fsnowflake-csharp.svg?type=shield" alt="FOSSA">
+</a>
 </p>
 
 </div>
+
 
 ## Description
 
@@ -86,4 +91,3 @@ Distributed snowflake ID automated configuration of different machine ids.
 ## License
 
 [Apache](LICENSE)
-
