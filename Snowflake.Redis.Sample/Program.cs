@@ -1,20 +1,26 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Snowflake;
+using Snowflake.Redis;
+using Snowflake.Redis.DependencyInjection;
 
-namespace Snowflake.Redis.Sample
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSnowflakeRedisService("127.0.0.1:6379,allowAdmin=true",
+    options => builder.Configuration.GetSection("snowFlake").Bind(options));
+
+var app = builder.Build();
+app.MapGet("/", (MachineIdConfig machineIdConfig) =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    return machineIdConfig.GetKey();
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+app.MapGet("/list", (SnowFlake snowFlake) =>
+{
+    List<long> list = new List<long>();
+    for (int i = 0; i < 1000; i++)
+    {
+        list.Add(snowFlake.NextId());
     }
-}
+    return list;
+});
+
+
+app.Run();
