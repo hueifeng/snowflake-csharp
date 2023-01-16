@@ -338,3 +338,7 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/.tye
+/Snowflake.Redis/host_trace.txt
+/host_trace.txt
+/Snowflake.Redis.Sample/host_trace.txt
