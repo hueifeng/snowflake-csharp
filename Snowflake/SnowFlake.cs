@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace Snowflake
 {
@@ -51,51 +52,51 @@ namespace Snowflake
             _machineId = machineId;
         }
 
-        readonly object _lock = new object();
-
         /// <summary>
         ///     产生下一个ID
         /// </summary>
         /// <returns></returns>
         public virtual long NextId()
         {
-            lock (_lock)
+            while (true)
             {
-                long currStamp = GetNewStamp();
-
-                if (currStamp < _lastStamp)
+                long timestamp = GetNewStamp();
+                if (timestamp < _lastStamp)
                 {
                     //时钟回拨，更新为上一次生成id的时间戳
-                    currStamp = _lastStamp;
-                    //throw new Exception("Clock moved backwards.  Refusing to generate id");
+                    timestamp = _lastStamp;
                 }
 
-                if (currStamp == _lastStamp)
+                if (_lastStamp == timestamp)
                 {
                     //相同毫秒内，序列号自增
                     _sequence = (_sequence + 1) & MaxSequence;
                     //同一毫秒的序列数已经达到最大
                     if (_sequence == 0L)
                     {
-                        currStamp = GetNextMill();
+                        SpinWait.SpinUntil(() => GetNewStamp() > _lastStamp);
+                        continue;
                     }
                 }
                 else
                 {
                     //不同毫秒内，序列号置为0
-                    _sequence = 0;
+                    _sequence = 0L;
                 }
 
-                _lastStamp = currStamp;
+                if (Interlocked.CompareExchange(ref _lastStamp, timestamp, timestamp) != timestamp)
+                {
+                    continue;
+                }
 
-                var id = ((currStamp - StartStamp) << TimestampLeft) //时间戳部分
-                       | (_datacenterId << DatacenterLeft) //数据中心部分
-                       | (_machineId << MachineLeft) //机器标识部分
-                       | _sequence; //序列号部分
-
-                return id;
+                // Bits for timestamp, data center, machine identifier, and sequence number
+                return ((timestamp - StartStamp) << TimestampLeft)
+                    | (_datacenterId << DatacenterLeft)
+                    | (_machineId << MachineLeft)
+                    | _sequence;
             }
         }
+
 
         protected virtual long GetNextMill()
         {
