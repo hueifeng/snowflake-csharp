@@ -2,31 +2,41 @@ name: publish to nuget
 on:
   push:
     branches:
-       - master # Default release branch
+      - master # Default release branch
 jobs:
-   publish:
-       name: list on nuget
-       runs-on: ubuntu-latest 
-       steps:
-         - uses: actions/checkout@v3
-         - name: Setup dotnet
-           uses: actions/setup-dotnet@v2
-           with:
-             dotnet-version: '8.0.x'
-             include-prerelease: true
-          # Publish
-         - name: publish on version change
-           id: publish_nuget
-           uses: rohith/publish-nuget@v2
-           with:
-              # Filepath of the project to be packaged, relative to root of repository
-              PROJECT_FILE_PATH: Snowflake/Snowflake.csproj
-              NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-              PACKAGE_NAME: Snowflake.CSharp
-         - name: publish on version change
-           uses: rohith/publish-nuget@v2
-           with:
-              # Filepath of the project to be packaged, relative to root of repository
-              PROJECT_FILE_PATH: Snowflake.Redis/Snowflake.Redis.csproj
-              NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-              PACKAGE_NAME: Snowflake.Redis.CSharp  
+  publish:
+    name: list on nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '8.0.x'
+          include-prerelease: true
+      - name: Ensure snowflake.png exists
+        run: |
+          if [ ! -f Snowflake/snowflake.png ]; then
+            echo "snowflake.png does not exist. Please add it to the Snowflake directory."
+            exit 1
+          fi
+      - name: Build the project
+        run: dotnet build -c Release Snowflake/Snowflake.csproj
+      - name: Package the project
+        run: dotnet pack --no-build -c Release Snowflake/Snowflake.csproj -o .
+      - name: Publish Snowflake.CSharp to NuGet
+        uses: rohith/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: Snowflake/Snowflake.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          PACKAGE_NAME: Snowflake.CSharp
+      - name: Build the Redis project
+        run: dotnet build -c Release Snowflake.Redis/Snowflake.Redis.csproj
+      - name: Package the Redis project
+        run: dotnet pack --no-build -c Release Snowflake.Redis/Snowflake.Redis.csproj -o .
+      - name: Publish Snowflake.Redis.CSharp to NuGet
+        uses: rohith/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: Snowflake.Redis/Snowflake.Redis.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          PACKAGE_NAME: Snowflake.Redis.CSharp
