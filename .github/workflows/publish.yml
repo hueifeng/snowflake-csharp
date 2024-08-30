@@ -19,18 +19,24 @@ jobs:
       - name: Package the project
         run: dotnet pack --no-build -c Release Snowflake/Snowflake.csproj -o .
       - name: Publish Snowflake.CSharp to NuGet
-        uses: rohith/publish-nuget@v2
-        with:
-          PROJECT_FILE_PATH: Snowflake/Snowflake.csproj
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-          PACKAGE_NAME: Snowflake.CSharp
+        run: |
+          PACKAGE_FILE=$(ls Snowflake.CSharp.*.nupkg | head -n 1)
+          if [ -z "$PACKAGE_FILE" ]; then
+            echo "No package file found."
+            exit 1
+          fi
+          echo "Pushing $PACKAGE_FILE to NuGet..."
+          dotnet nuget push "$PACKAGE_FILE" -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}} --skip-duplicate || echo "Package already exists on NuGet."
       - name: Build the Redis project
         run: dotnet build -c Release Snowflake.Redis/Snowflake.Redis.csproj
       - name: Package the Redis project
         run: dotnet pack --no-build -c Release Snowflake.Redis/Snowflake.Redis.csproj -o .
       - name: Publish Snowflake.Redis.CSharp to NuGet
-        uses: rohith/publish-nuget@v2
-        with:
-          PROJECT_FILE_PATH: Snowflake.Redis/Snowflake.Redis.csproj
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-          PACKAGE_NAME: Snowflake.Redis.CSharp
+        run: |
+          PACKAGE_FILE=$(ls Snowflake.Redis.CSharp.*.nupkg | head -n 1)
+          if [ -z "$PACKAGE_FILE" ]; then
+            echo "No package file found."
+            exit 1
+          fi
+          echo "Pushing $PACKAGE_FILE to NuGet..."
+          dotnet nuget push "$PACKAGE_FILE" -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}} --skip-duplicate || echo "Package already exists on NuGet."
