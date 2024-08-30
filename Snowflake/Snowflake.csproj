@@ -11,8 +11,8 @@
 		<RepositoryUrl>https://github.com/hueifeng/snowflake-csharp</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Version>1.3.1</Version>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>snowflake.png</PackageIcon>
+		<PackageReadmeFile>../README.md</PackageReadmeFile>
+		<PackageIcon>../snowflake.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
