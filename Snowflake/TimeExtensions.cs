@@ -1,8 +1,12 @@
-﻿using System;
+using System;
 
 namespace Snowflake
 {
-    public static class System
+    /// <summary>
+    ///     提供当前毫秒时间戳，并支持测试期替换时间源。
+    ///     注意：原类名 <c>System</c> 与 BCL 的 <c>System</c> 命名空间冲突，已重命名为 <see cref="SnowflakeClock"/>。
+    /// </summary>
+    public static class SnowflakeClock
     {
         public static Func<long> CurrentTimeFunc = InternalCurrentTimeMillis;
 

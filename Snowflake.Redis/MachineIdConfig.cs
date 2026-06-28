@@ -1,20 +1,41 @@
-﻿using Snowflake.Redis.Cache;
+using Snowflake.Redis.Cache;
 using System;
 using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
 namespace Snowflake.Redis
 {
-    public class MachineIdConfig
+    public class MachineIdConfig : IDisposable
     {
+        /// <summary>机器ID槽位上限（受 MachineBit=6 限制，0~63）。</summary>
+        private const int MaxMachineSlot = 64;
+        /// <summary>第一段槽位数（基于 IP 哈希的主选区间）。</summary>
+        private const int PrimarySlotCount = 32;
+        /// <summary>注册最大重试次数，防止异常场景下无限循环。</summary>
+        private const int MaxRegisterAttempts = 64;
+        /// <summary>机器ID在 Redis 中的过期时间（秒）。</summary>
+        private const int KeyTtlSeconds = 60 * 60 * 24;
+        /// <summary>续期刷新间隔（秒）：短于 TTL，留出缓冲，避免一次刷新失败即丢槽。</summary>
+        private const int RefreshIntervalSeconds = 60 * 60 * 12;
+
         private readonly ICacheAsync _cacheAsync;
+        private readonly System.Timers.Timer _refreshTimer;
+        private readonly Random _random = new Random();
 
         public MachineIdConfig(ICacheAsync cacheAsync, SnowflakeOptions options)
         {
             this._cacheAsync = cacheAsync;
             Name = options.Name;
             _datacenterId = options.DataCenterId;
+            _refreshTimer = new System.Timers.Timer(RefreshIntervalSeconds * 1000L)
+            {
+                AutoReset = true,
+                Enabled = false
+            };
+            _refreshTimer.Elapsed += Timer_Elapsed;
         }
 
         /// <summary>
@@ -25,6 +46,7 @@ namespace Snowflake.Redis
         /// <summary>
         ///     机器Id
         /// </summary>
+        public long MachineId => _machineId;
         private long _machineId;
 
         /// <summary>
@@ -35,7 +57,7 @@ namespace Snowflake.Redis
         /// <summary>
         ///     本地IP地址
         /// </summary>
-        private static string LocalIp { get; set; }
+        public string LocalIp { get; private set; }
 
         public string GetKey()
         {
@@ -48,179 +70,197 @@ namespace Snowflake.Redis
         }
 
         /// <summary>
-        ///     获取IP地址
+        ///     获取本机 IPv4 地址（无 IPv4 时回退到 IPv6）。
         /// </summary>
         /// <returns></returns>
         private string GetIpAddress()
         {
-            string addressIp = string.Empty;
+            IPAddress ipv6Fallback = null;
             foreach (IPAddress ipAddress in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
             {
-                if (ipAddress.AddressFamily.ToString() == "InterNetwork")
+                if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
                 {
                     return ipAddress.ToString();
                 }
+                if (ipv6Fallback == null && ipAddress.AddressFamily == AddressFamily.InterNetworkV6)
+                {
+                    ipv6Fallback = ipAddress;
+                }
             }
-
-            return addressIp;
+            return ipv6Fallback?.ToString() ?? string.Empty;
         }
 
         public async Task<SnowFlake> InitMachineId()
         {
-            LocalIp = GetIpAddress(); //192.168.0.200
-            long ip = long.Parse(LocalIp.Replace(".", "")); //1921680200
-            _machineId = ip.GetHashCode() % 32; //0-31
-            //创建一个机器ID
+            LocalIp = GetIpAddress();
+            if (string.IsNullOrEmpty(LocalIp))
+            {
+                throw new InvalidOperationException("无法获取本机 IP 地址，机器ID分配失败");
+            }
+
+            _machineId = HashToSlot(LocalIp, PrimarySlotCount);
             await CreateMachineId();
+
+            // 启动续期定时器
+            _refreshTimer.Start();
 
             return new SnowFlake(_datacenterId, _machineId);
         }
 
         /// <summary>
-        /// 获取机器IP 并 % 32得到0-31
-        /// 使用 业务名 + 组名 + IP 作为 Redis 的 key，机器IP作为 value，存储到Redis中
+        ///     将 IP 字符串映射到 [0, slotCount) 的稳定槽位（FNV-1a 32bit）。
+        ///     避免使用 string.GetHashCode()（跨进程/架构不稳定）以及
+        ///     "Replace('.',"")" 拼接导致的碰撞（如 192.168.0.200 与 192.16.80.200）。
         /// </summary>
-        /// <returns></returns>
-        private async Task<long> CreateMachineId()
+        internal static int HashToSlot(string ip, int slotCount)
+        {
+            // FNV-1a 32-bit
+            uint hash = 2166136261u;
+            unchecked
+            {
+                foreach (byte b in System.Text.Encoding.UTF8.GetBytes(ip))
+                {
+                    hash ^= b;
+                    hash *= 16777619u;
+                }
+            }
+            return (int)(hash % (uint)slotCount);
+        }
+
+        /// <summary>
+        ///     注册机器ID，最多重试 <see cref="MaxRegisterAttempts"/> 次，避免无限递归导致栈溢出。
+        /// </summary>
+        private async Task CreateMachineId()
+        {
+            int attempts = 0;
+            while (attempts < MaxRegisterAttempts)
+            {
+                attempts++;
+                try
+                {
+                    bool flag = await RegisterMachine(_machineId, LocalIp);
+                    if (flag)
+                    {
+                        return;
+                    }
+
+                    // 注册失败：可能是该槽位已被其他 IP 占用。先扫描 0~31 找空槽。
+                    if (await CheckIfCanRegister())
+                    {
+                        // 找到空槽，CheckIfCanRegister 已把 _machineId 设为该空槽，继续尝试注册
+                        continue;
+                    }
+
+                    // 0~31 全满，回退到 32~63 随机并尝试注册
+                    GetRandomMachineId();
+                    continue;
+                }
+                catch (Exception)
+                {
+                    // Redis 异常等：回退到 32~63 随机，继续重试
+                    GetRandomMachineId();
+                }
+            }
+
+            throw new InvalidOperationException(
+                $"机器ID注册失败，已重试 {MaxRegisterAttempts} 次。请检查 Redis 连接或槽位占用情况。");
+        }
+
+        /// <summary>
+        ///     获取 32~63 之间的随机机器ID。
+        /// </summary>
+        private void GetRandomMachineId()
+        {
+            int id = _random.Next(PrimarySlotCount, MaxMachineSlot);
+            Interlocked.Exchange(ref _machineId, id);
+        }
+
+        /// <summary>
+        ///     检查 0~31 槽位中是否存在空位；若存在则把 _machineId 置为该空位并返回 true。
+        /// </summary>
+        /// <returns>true 表示找到空槽；false 表示已满。</returns>
+        private async Task<bool> CheckIfCanRegister()
+        {
+            for (int i = 0; i < PrimarySlotCount; i++)
+            {
+                bool exists = await _cacheAsync.Exists($"{Name}:{_datacenterId}:{i}");
+                if (!exists)
+                {
+                    Interlocked.Exchange(ref _machineId, i);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///     定时续期：检查 Redis 中存的 IP 是否仍是本机，是则续期；否则重新分配。
+        /// </summary>
+        private async void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             try
             {
-                //向redis注册，并设置超时时间
-                var flag = await RegisterMachine(_machineId, LocalIp);
-                if (flag)
+                bool b = await CheckIsLocalIp();
+                if (b)
                 {
-                    UpdateExpTimeThread();
-                    //返回机器ID
-                    return _machineId;
-                }
-
-                //注册失败，可能 Hash%32 结果冲突
-                if (!await CheckIfCanRegister())
-                {
-                    //如果0~31已经用完，使用32~64之间的随机ID
-                    GetRandomMachineId();
-                    await CreateMachineId();
+                    await _cacheAsync.Expire(GetKey(), KeyTtlSeconds);
                 }
                 else
                 {
-                    // 如果存在剩余的ID
+                    // IP 冲突：当前槽位已被其他实例占用，重新分配机器ID
+                    // 注意：已生成的 SnowFlake 单例（含旧 machineId）不会自动更新，
+                    // 这里重新分配用于下一次注册，避免与占用者持续冲突。
+                    GetRandomMachineId();
                     await CreateMachineId();
                 }
             }
             catch (Exception)
             {
-                // 获取 32 - 63 之间的随机Id
-                // 返回机器Id
-                GetRandomMachineId();
-                return _machineId;
-            }
-
-            return _machineId;
-        }
-
-        /// <summary>
-        ///     获取32~63随机数
-        /// </summary>
-        private void GetRandomMachineId()
-        {
-            Random random = new Random();
-            _machineId = random.Next(32, 63);
-        }
-
-        /// <summary>
-        ///     检查是否注册满了
-        /// </summary>
-        /// <returns></returns>
-        private async Task<bool> CheckIfCanRegister()
-        {
-            //判断0~31这个区间段的机器IP是否被占满
-            bool flag = true;
-            for (int i = 0; i < 32; i++)
-            {
-                flag = await _cacheAsync.Exists($"{Name}:{_datacenterId}:{i}");
-                //如果不存在，设置机器ID为这个不存在的数字
-                if (!flag)
-                {
-                    _machineId = i;
-                    break;
-                }
-            }
-
-            return !flag;
-        }
-
-        /// <summary>
-        ///     1、更新超时时间
-        /// 注意，更新前检查是否存在机器IP占用情况
-        /// </summary>
-        private void UpdateExpTimeThread()
-        {
-            var timer = new Timer();
-            timer.Enabled = true;
-            timer.Interval = 1000 * 60 * 60 * 23;
-            timer.Start();
-
-            timer.Elapsed += Timer_Elapsed;
-        }
-
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            bool b = CheckIsLocalIp(_machineId.ToString()).Result;
-            if (b)
-            {
-                _cacheAsync.Expire(GetKey(), 60 * 60 * 24);
-            }
-            else
-            {
-                // IP冲突
-                // 重新生成机器ID，并且更改雪花中的机器ID
-                GetRandomMachineId();
-                //重新生成并注册机器ID
-                CreateMachineId().ConfigureAwait(false).GetAwaiter().GetResult();
-                // 更改雪花中的机器ID
-                SnowFlake.SetMachineId(_machineId);
+                // 续期失败忽略，下一轮再试；TTL 留有缓冲
             }
         }
 
         /// <summary>
-        ///     检查Redis中对应key的val是否是本机IP
+        ///     检查 Redis 中对应 key 的 value 是否是本机 IP。
         /// </summary>
-        /// <param name="machineId"></param>
-        /// <returns></returns>
-        private async Task<bool> CheckIsLocalIp(string machineId)
+        private async Task<bool> CheckIsLocalIp()
         {
             string ip = await _cacheAsync.Get(GetKey());
-            return LocalIp.Equals(ip);
+            return LocalIp != null && LocalIp.Equals(ip);
         }
 
         /// <summary>
-        ///     注册机器 设置超时时间
+        ///     注册机器：用 SetNx 占槽，并设置过期时间。若槽已被本机 IP 占用则续期。
         /// </summary>
-        /// <param name="machineId">0~31</param>
+        /// <param name="machineId">0~63</param>
         /// <param name="localIp"></param>
         /// <returns></returns>
         private async Task<bool> RegisterMachine(long machineId, string localIp)
         {
-            // key 业务号 + 数据中心ID + 机器ID value 机器IP
             var key = GetKey();
             var result = await _cacheAsync.SetNxAsync(key, localIp);
             if (result)
             {
-                //过期时间1天
-                await _cacheAsync.Expire(key, 60 * 60 * 24);
+                await _cacheAsync.Expire(key, KeyTtlSeconds);
                 return true;
             }
 
-            //如果key存在，判断val和当前IP是否一致，一致返回true
+            // 如果 key 存在，判断 value 与当前 IP 是否一致，一致则续期返回 true
             var val = await _cacheAsync.Get(key);
             if (localIp.Equals(val))
             {
-                //IP一致，注册机器ID成功
-                await _cacheAsync.Expire(key, 60 * 60 * 24);
+                await _cacheAsync.Expire(key, KeyTtlSeconds);
                 return true;
             }
 
             return false;
+        }
+
+        public void Dispose()
+        {
+            _refreshTimer.Elapsed -= Timer_Elapsed;
+            _refreshTimer.Stop();
+            _refreshTimer.Dispose();
         }
     }
 }
